@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cdtprojectproperties>
+<section name="org.eclipse.cdt.internal.ui.wizards.settingswizards.IncludePaths">
+<language name="Assembly Source File">
+
+</language>
+<language name="C++ Source File">
+<includepath>E:/Prog/src/lib/wx/wxWidgets-2.8.12/include</includepath>
+<includepath>E:/Prog/src/lib/boost/boost_1_47_0</includepath>
+<includepath>E:/Prog/src/ginclude</includepath>
+<includepath>E:/Prog/src/lib/wx/wxWidgets-2.8.12/lib/gcc_lib/mswd</includepath>
+
+</language>
+<language name="C Source File">
+
+</language>
+<language name="Object File">
+
+</language>
+</section>
+<section name="org.eclipse.cdt.internal.ui.wizards.settingswizards.Macros">
+<language name="Assembly Source File">
+
+</language>
+<language name="C++ Source File">
+<macro>
+<name> __WXMSW__ </name><value/>
+</macro>
+<macro>
+<name>WX_PRECOMP</name><value/>
+</macro>
+<macro>
+<name>__GNUWIN32__</name><value/>
+</macro>
+<macro>
+<name> __WXDEBUG__ </name><value/>
+</macro>
+
+</language>
+<language name="C Source File">
+
+</language>
+<language name="Object File">
+
+</language>
+</section>
+</cdtprojectproperties>

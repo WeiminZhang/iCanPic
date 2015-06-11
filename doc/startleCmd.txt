@@ -1,0 +1,229 @@
+Startle box Commands and the 9 16-bit integers that need to be sent to make them happen.
+
+All commands begin with a GSISocketUser1 (see startledef.h). This int16 tells the server that we are calling a User1 function. This is required because the socket interface is designed for my microcontroller library. The startle box is a user add-on, that extends the core functions of the interface.
+
+Next int16 is the command
+next int16 is a flag, telling the box whether it is a Queued or an Immediate function. Some commands are always immediate
+In this case you must still send a flag value, or a dummy value as a placeholder. 
+
+subsequent int16's are data or placeholders. You must always send them. A total of 9 int16's if we include the GSISocketUser1
+
+Every command will return a minimum of 2 int16's that must be read or the communication will break down.
+
+1st int16 is a return code see 'enum socketReturnValue' in StartleDef.h for codes. Hopefully this will be a success code, otherwise it will be the dreaded error code.
+
+2nd int16 is a 'numberOfInts' value. Some commands can return extra data, an ADC could return several kb
+You must read this int16 and then read a further 'numberOfInts' int16's to accept all of the data. You must read this data or else the server/client will be out of sync.
+
+The folowing is a list of the startle commands and the sequence of 16 bit integers that will make them happen. Remember that all important definitions can be found in startledesf.h
+
+Important Note:
+For Queued commands you must send an at_tick 16 bit value. This is the millisecond at which that command will execute.
+The pic chip parsing code is not very bright and will not attempt to sort the at_ticks. So, you must make sure to send them in chronological order. You can send multiple commands at the same at_tick, just don't send later at_ticks with a lower value then a previous one. Your program flow will logicially work in the correct fashion in any case, so this shouldn't be a problem.
+
+Commands:
+
+
+	Reset
+GSISocketUser1
+STLCommandReset
+STLQueued or STLImmediate
+dummy
+dummy
+dummy
+dummy
+dummy
+dummy
+
+Reset will flush the Queued commands (if any) from the pic (microccontroller). It will also put the pic back in to it default state ready for a new sequence of commands. A Reset should always be issued once a set of commands has been executed. You should always send set of commands, execute them, then reset and send a fresh set of commands.
+The pic will queue a maximum of 30 commands that can be executed.
+Most commands can either be executed Immediately or Queued. The 3rd 16 bit integer is a flag to indicate whether the command is queued. You can execute as many Immediate commands as you like without issuing a reset.
+If you look at the StartleTest.cpp file and examine 'OnTest1' and 'OnTest2' you will see how the commands should be used.
+OnTest2 runs in a loop that sends a sequence of commands to each of the 8 channels, acquiring 5k data points from each channel. The 30 command limit is unlikely to be a limiting factor for you, though if you need more space, let me know. 
+
+
+
+	SetAmplitude
+GSISocketUser1
+STLCommandSetAmplitude               	//Set the Amplitude DAC, p0=0-STLMaxAmplitudeDAC
+STLQueued or STLImmediate
+amplitude (0-1023)
+at_tick					//to fire at this tick (must be queued)		
+dummy
+dummy
+dummy
+dummy
+
+Amplitude is a value between 0-1023. at_tick is for Queued commands. The command will execute at_tick millisecond
+
+	SetAmplitudeSPL		
+GSISocketUser1
+STLCommandSetAmplitudeSPL              	//Set the Amplitude in dB (uses a LUT), LUT can be re-programmed if dB not correct
+STLQueued or STLImmediate
+amplitude (0-126)			//Only really meaningful between 60-125, 126 is max output from the amp
+at_tick					//to fire at this tick (must be queued)		
+dummy
+dummy
+dummy
+dummy
+
+This command uses a look up table (LUT). For amplitude I have set the LUT to default values. There is also a SetLUT command so that you can associate a dB value with a binary value. In other words you can set a dB (0-125) to a particular binary value. Whenever you then can SetAmplitudeSPL you use the dB value. The server then looks up the binary value that is required to achieve this SPL. This is used to calibrate your system if/when it needs it.
+
+
+	SetFrequency
+GSISocketUser1
+STLCommandSetFrequency               	//Set the frequency DAC, p0=0-STLMaxAmplitudeDAC
+STLQueued or STLImmediate
+frequencty (0-1023)
+at_tick					//to fire at this tick (must be queued)		
+dummy
+dummy
+dummy
+dummy
+
+
+	SetFrequencyHz			//set frequency in Hz, uses a slope calculation
+GSISocketUser1
+STLCommandSetFrequencyHz               	//Set the frequency (STLMinFrequency to STLMaxFrequency) will not allow out of but set to highest or lowest if out of bounds
+STLQueued or STLImmediate
+frequencty (STLMinFrequecny-STLMaxFrequency)	//see startleDef.h
+at_tick					//to fire at this tick (must be queued)		
+dummy
+dummy
+dummy
+dummy
+
+
+//SetDelay command is probably not required. We now use a 1ms scheduler clock to turn things on and off
+	SetDelay
+GSISocketUser1
+STLCommandSetDelay               	//make the microcontroller pause for an interval
+STLQueued or STLImmediate
+delay in ms (0-32767)
+at_tick					//to fire at this tick (must be queued)		
+dummy
+dummy
+dummy
+dummy
+
+
+
+
+	STLCommandAcquire
+GSISocketUser1
+STLCommandAcquire
+STLQueued or STLImmediate
+num_data_points
+at_tick					//to fire at this tick (must be queued)		
+dummy
+dummy
+dummy
+dummy
+
+
+	STLCommandSetChannel
+GSISocketUser1
+STLCommandSetChannel			//0-7
+STLQueued or STLImmediate
+at_tick					//to fire at this tick (must be queued)		
+dummy
+dummy
+dummy
+dummy
+dummy
+
+
+
+
+	STLCommandExecute
+GSISocketUser1
+STLCommandExecute			//always immediate
+dummy
+dummy
+dummy
+dummy
+dummy
+dummy
+dummy
+
+
+
+	STLCommandTone
+GSISocketUser1
+STLCommandTone                       //
+STLQueued or STLImmediate
+STLToneOn or STLToneOff
+at_tick					//to fire at this tick (must be queued)		
+dummy
+dummy
+dummy
+dummy
+
+
+//Probably not required and requires some knowledge of pic internals to use correctly
+//best to use 1ms scheduler to turn tones on and off
+	STLCommandTimedToneOn           //p0=period,p1=prescaler,p2=at_tick
+GSISocketUser1
+STLCommandTimedToneOn                //p0=period,p1=prescaler,p2=at_tick
+STLQueued or STLImmediate
+on_time
+prescaler				//see startledef.h for details
+at_tick					//to fire at this tick (must be queued)		
+dummy
+dummy
+dummy
+
+
+
+	STLCommandSetNoiseAmplitude          //Set the Noise DAC, p0=0-STLMaxNoiseAmplitudeDAC
+GSISocketUser1
+STLCommandSetNoiseAmplitude          	//Set the Noise DAC, p0=0-STLMaxNoiseAmplitudeDAC
+STLQueued or STLImmediate
+noise_amplitude				//0-1023
+at_tick					//to fire at this tick (must be queued)		
+dummy
+dummy
+dummy
+dummy
+
+
+//Warning! SetNoiseAmplitude LUT has not been calibrated!
+	SetNoiseAmplitudeSPL		
+GSISocketUser1
+STLCommandSetNoiseAmplitudeSPL         	//Set the Amplitude in dB (uses a LUT), LUT can be re-programmed if dB not correct
+STLQueued or STLImmediate
+amplitude (0-126)			//Only really meaningful between 60-125, 126 is max output from the amp
+at_tick					//to fire at this tick (must be queued)		
+dummy
+dummy
+dummy
+dummy
+
+
+
+//Probably best not to use this command directly. Use WaitForCompletion
+//will return a set of status bits of current pic state (see starledef.h)
+	STLCommandGetStatus    
+GSISocketUser1
+STLCommandGetStatus
+dummy					//always immediate
+dummy
+dummy
+dummy
+dummy
+dummy
+dummy
+
+
+
+	STLCommandWaitForCompletion          //Wait for hardware to finish any queued tasks
+GSISocketUser1
+STLCommandWaitForCompletion
+STLImmediate				//always immediate this will be ignored
+timeout					//send 0, will use default timeout
+at_tick					//to fire at this tick (must be queued)		
+dummy
+dummy
+dummy
+dummy
+

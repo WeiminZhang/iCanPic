@@ -1,0 +1,6 @@
+#ifndef LCDCLIENT_HPP_INCLUDED
+#define LCDCLIENT_HPP_INCLUDED
+
+
+
+#endif

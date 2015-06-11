@@ -1,0 +1,41 @@
+From SGX-120L User Manual, rev2_0.htm
+
+ASCII	Name	Function
+0	NUL	Ignored, not placed in buffer, others are
+1	SOH	HOME Cursor 0,0
+2	STX	Begin Inverse
+3	ETX	End Inverse
+4	ETO	Ignored
+5	ENQ	Ignored
+6	ACK	Ignored
+7	Bel	Ignored
+8	BS	Backspace
+9	HTAB	Tab to next TAB pos (default 4), moves to next line and wraps to top line
+10	LF	Smart Linefeed; down one row, ignore 1st LF following a CR (smart), also wraps to top
+11	VTAB	Vertical tab; up one row
+12	FF	Formfeed; CLS
+13	CR	Carriage return; Move to beginning next row
+14	SO	Backlight ON
+15	SI	Backlight OFF
+16	DLE	Accept cursor position data
+Control-P puts the display into cursor-positioning mode. In this mode, there are two ways to move the cursor to a particular position on the screen: 
+Text method: Send the display position as text. For example, from a terminal program, press control-P, then type "13" (just the numbers, not the quotes) followed by a space (to exit the mode). As soon as the space is typed, the cursor will jump to position 13 (14th character of the first line when the default small font is in effect). Note that the space (or other non-numeric character other than null) that terminates position mode is ignored. 
+One-byte binary method: Send the display position as a single byte value equal to the position plus 64. For example, from a terminal program, press control-P, then type "A". The cursor will jump to position 1 (second character of the first line) because the ASCII code for A is 65. The G12032 subtracts 64 from the binary value to arrive at the screen position. 
+With either method the G12032 will accept values larger than the highest valid screen position for the current font. The cursor will simply wrap around until it reaches a valid screen position. As with all instructions that move the printing position, ctrl-P works in terms of the font size in effect at the time. If you have a mixture of font sizes on the screen, keep this in mind. See the description of the font instruction for further information on screen layouts with various font sizes.
+
+
+17	DC1	Ignored
+18	DC2	Accept right-aligned data
+Control-R accepts a number from 2 to 9 (as text) representing the width of an area on the screen in which right-aligned text is to be printed. The printing position will back up by that number of characters from its present position. Subsequent text will be stored without printing until one of the following is received: 
+
+The specified number of characters 
+A control character (ASCII 1-31) 
+A decimal point [the period (.) character] 
+When one of the conditions listed above is met, the display will print the stored text with right alignment, erasing any leftover text within the specified width. Note that all of the print-positioning will be done in terms of the font-size setting in effect at the time the instruction is received.
+
+Note: Right-alignment requires the G12032 to edit incoming data. Bytes sent immediately after exiting the right-alignment mode may be lost. To prevent this, make sure that your program delays 3-4 milliseconds after a right-alignment before sending any more data. Or you can add 3 null characters after the character that ends the right-alignment mode (see list above). The nulls have no effect other than to delay the arrival of subsequent data. 
+
+Ignored ASCII 19-26 (control chars)
+
+19-26		Ignored
+27	ESC	begin graphic instruction

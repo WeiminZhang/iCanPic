@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cdtprojectproperties>
+<section name="org.eclipse.cdt.internal.ui.wizards.settingswizards.IncludePaths">
+<language name="Assembly Source File">
+
+</language>
+<language name="C++ Source File">
+<includepath>E:/Prog/src/lib/wx/wxWidgets-2.8.12/include</includepath>
+<includepath>E:/Prog/src/lib/wx/wxWidgets-2.8.12/lib/gcc_lib/mswd</includepath>
+<includepath>E:/home/eclipse/c/gsi/gsi-common</includepath>
+<includepath>E:/Prog/src/ginclude</includepath>
+<includepath>E:/Prog/src/lib/boost/boost_1_55_0</includepath>
+<includepath>E:/home/eclipse/c/gsi/gsi-server</includepath>
+<includepath>E:\home\eclipse\c\gsi</includepath>
+
+</language>
+<language name="C Source File">
+
+</language>
+<language name="Object File">
+
+</language>
+</section>
+</cdtprojectproperties>
