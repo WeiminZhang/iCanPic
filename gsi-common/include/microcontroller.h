@@ -186,8 +186,7 @@ enum GSIEnumRecord
 
 
   #define rtITERATOR  rtITERATOR + 1
-
-  ;-----Send a Message to an LCD on a node------------------------------
+  
 */
     rtGSIRS232BreakMessage=60,
 /*
@@ -200,6 +199,8 @@ enum GSIEnumRecord
         case GSIRS232BreakUserAbortReset: 7
         case GSIRS232BreakAsyncRecord:    8  //Asyncronous record (microcontroller->pc) request
 */
+
+/*;-----Send a Message to an LCD on a node------------------------------*/
     rtGSILCDMessage = 61,
 /*Data position 0 equates*/
 /*Set record.data[0] to these for the specific function*/
@@ -212,7 +213,6 @@ enum GSIEnumRecord
 //  GSI_LCD_MESSAGE_GET_CAPABILITIES
 /* #define rtITERATOR  rtITERATOR + 1*/
 
-/*;-----Send a Message to an LCD on a node------------------------------*/
     rtGSIKeypadMessage = 62,
 /* #define rtITERATOR  rtITERATOR + 1*/
 
@@ -262,7 +262,7 @@ enum GSIEnumRecord
 
 
 
-/*;--A remote node has rested an id ( #define rtTX_CANMessage will send the ID)
+/*;--A remote node has requested an id ( #define rtTX_CANMessage will send the ID)
   ;master->pc
 */
     rtGSICANSetSlaveIDReq=  71,
