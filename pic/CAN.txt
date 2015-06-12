@@ -1,0 +1,6 @@
+		CAN
+
+# power up all nodes
+# start looking for slave id (press '#' on slave)
+# set master (press '*' on master)
+
